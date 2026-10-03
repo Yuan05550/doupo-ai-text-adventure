@@ -1,0 +1,7 @@
+# 发布者自用文档，不随仓库公开
+PUBLISH.md
+
+# 系统
+Thumbs.db
+.DS_Store
+desktop.ini

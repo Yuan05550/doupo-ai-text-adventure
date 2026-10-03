@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use or reference this project, please cite it as below."
+title: "斗破苍穹 · AI 命运推演引擎 (Doupo Cangqiong AI Narrative Engine)"
+abstract: >-
+  A single-file, dependency-free, LLM-driven interactive fiction engine based on
+  the Chinese web novel Battle Through the Heavens. It maintains strongly
+  consistent structured game state (realm, skills, flames, pills, secret arts)
+  on top of unreliable LLM output, using a string-aware JSON extraction chain,
+  a guarded state-merge layer, and generation-based race-condition guards for
+  background tasks.
+type: software
+license: MIT
+version: "2.3.0"
+date-released: "2025-01-01"
+repository-code: "https://github.com/YOUR_GITHUB_USERNAME/doupo-ai-text-adventure"
+url: "https://github.com/YOUR_GITHUB_USERNAME/doupo-ai-text-adventure"
+authors:
+  - alias: "YOUR_GITHUB_USERNAME"
+    name-particle: ""
+keywords:
+  - llm
+  - large-language-model
+  - text-adventure
+  - interactive-fiction
+  - ai-game
+  - ai-dungeon-master
+  - roleplay
+  - rpg
+  - deepseek
+  - single-file
+  - zero-dependency
+  - vanilla-javascript
+  - html5-game
+  - browser-game
+  - chinese-novel
+  - battle-through-the-heavens
+  - doupo-cangqiong
+  - 斗破苍穹
+  - 文字冒险
+  - 人工智能
