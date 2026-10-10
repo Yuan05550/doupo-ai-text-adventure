@@ -4,13 +4,13 @@
 
 ### Doupo Cangqiong · AI Narrative Engine
 
-**把 227 条斗技、23 种异火、65 味丹药、123 章剧情大纲，全部装进一个 2.88 MB 的 HTML 文件**
+**把 227 条斗技、23 种异火、65 味丹药、452 处地点、123 章剧情大纲，全部装进一个 3.26 MB 的 HTML 文件**
 
-**18,000 行原生 JavaScript 手写引擎 · 零依赖 · 零构建 · 双击即玩**
+**23,000 行原生 JavaScript 手写引擎 · 零依赖 · 零构建 · 双击即玩**
 
 <img src="screenshots/gameplay.png" width="360" alt="斗破苍穹 · AI 命运推演引擎 — 推演界面：状态卡、斗技栏、纳戒与命运轨迹" />
 
-[![单文件](https://img.shields.io/badge/单文件-2.88_MB-blue?style=flat-square)](#-快速开始)
+[![单文件](https://img.shields.io/badge/单文件-3.26_MB-blue?style=flat-square)](#-快速开始)
 [![零依赖](https://img.shields.io/badge/外部依赖-0-success?style=flat-square)](#-架构)
 [![回归测试](https://img.shields.io/badge/回归测试-62_项通过-brightgreen?style=flat-square)](#-实证结果)
 [![语言](https://img.shields.io/badge/语言-JavaScript-f7df1e?style=flat-square)](#-架构)
@@ -49,6 +49,7 @@
 - [9. 常见问题 FAQ](#-常见问题-faq)
 - [10. 路线图](#-路线图)
 - [11. 引用与声明](#-引用与声明)
+- [12. 更新日志](#12-更新日志-changelog)
 
 ---
 
@@ -58,12 +59,14 @@
 
 <table>
 <tr>
-<td width="38%" align="center"><img src="screenshots/main-menu.png" alt="斗破苍穹 AI 命运推演引擎 主菜单" /></td>
-<td width="62%" align="center"><img src="screenshots/gameplay.png" alt="斗破苍穹 AI 命运推演引擎 推演界面：状态卡、斗技栏、纳戒、命运轨迹" /></td>
+<td width="33%" align="center"><img src="screenshots/main-menu.png" alt="斗破苍穹 AI 命运推演引擎 主菜单" /></td>
+<td width="34%" align="center"><img src="screenshots/gameplay.png" alt="斗破苍穹 AI 命运推演引擎 推演界面：状态卡、斗技栏、纳戒、命运轨迹" /></td>
+<td width="33%" align="center"><img src="screenshots/world-map.png" alt="斗破苍穹 AI 命运推演引擎 世界地图：452 处地点、12 层嵌套树" /></td>
 </tr>
 <tr>
 <td align="center"><sub><b>主菜单</b><br/>三种模式入口</sub></td>
 <td align="center"><sub><b>推演界面</b><br/>状态卡 · 斗技栏 · 纳戒 · 命运轨迹</sub></td>
+<td align="center"><sub><b>世界地图</b><br/>452 处地点 · 12 层嵌套树</sub></td>
 </tr>
 </table>
 
@@ -98,7 +101,7 @@
 | 维度 | 指标 | 数值 |
 |:---|:---|:---|
 | **交付形态** | 文件数量 | **1** 个 HTML |
-| | 文件体积 | **2.88 MB**（2,879,927 字节） |
+| | 文件体积 | **3.26 MB**（3,415,104 字节） |
 | | 外部依赖 | **0** |
 | | 构建步骤 | **无** |
 | **代码规模** | 总行数 | 18,015 行 |
@@ -134,6 +137,8 @@
 graph TB
     subgraph P["🖥 表现层"]
         UI["状态卡 / 斗技栏 / 纳戒<br/>气泡式剧情流 / 打字机"]
+        PANEL["🗡️ 斗技面板<br/>熟练度四档 · 效果描述"]
+        WMAP["🗺️ 世界地图<br/>452 地点 · 12 层嵌套树"]
     end
 
     subgraph E["⚙️ 引擎层"]
@@ -143,10 +148,14 @@ graph TB
         MERGE["状态护栏<br/>mergeNewState"]
         RECON["秘法校准<br/>reconcileSecretStatus"]
         GEN["代际守卫<br/>gameStateGeneration"]
+        NORM["斗技归一化管线<br/>四级级联 · 227 条白名单"]
+        CAST["释放双轴锚点<br/>境界定量级 · 阶别定位置"]
+        ASSIGN["角色卡斗技分配<br/>族群匹配 + 境界配额"]
     end
 
     subgraph D["📚 数据层"]
-        TABLES["内联数据表<br/>227 斗技 · 23 异火 · 65 丹药"]
+        TABLES["内联数据表<br/>227 斗技 · 23 异火 · 65 丹药<br/>452 地点 · 12 境界"]
+        OWNER["斗技 × 势力映射<br/>SKILL_OWNER_MAP"]
         SAVE["localStorage<br/>存档 / 槽位 / 历史"]
     end
 
@@ -155,6 +164,8 @@ graph TB
     end
 
     UI --> SCHED
+    PANEL --> NORM
+    WMAP --> UI
     SCHED --> EXTRACT
     EXTRACT --> REPAIR
     SCHED --> API
@@ -162,7 +173,13 @@ graph TB
     REPAIR --> MERGE
     MERGE --> RECON
     MERGE --> GEN
+    MERGE --> NORM
+    NORM --> ASSIGN
+    OWNER --> ASSIGN
+    ASSIGN --> SAVE
     TABLES --> MERGE
+    NORM --> CAST
+    CAST --> API
     MERGE --> SAVE
     SAVE --> UI
     SCHED --> UI
@@ -178,11 +195,12 @@ sequenceDiagram
     participant S as 🗂 状态机
     participant A as ☁️ DeepSeek
 
-    U->>E: 输入行动 / 点选斗技·丹药
+    U->>E: 输入行动 / 点选斗技·丹药 / 赠送丹药
     E->>E: 抢占并发锁 isProcessing
     E->>E: 锁定界面按钮（打标可回收）
     E->>S: 快照待消耗丹药（延迟执行）
     E->>E: 秘法回合推进（本地权威）
+    E->>E: 挂载释放双轴锚点<br/>境界定量级 · 阶别定位置 · 熟练度
     E->>A: SSE 流式请求（AbortController 守护）
     A-->>E: 增量推送正文
     E->>U: 实时分段渲染预览（增量防闪烁）
@@ -652,6 +670,58 @@ https://<你的用户名>.github.io/<仓库名>/
 ### 免责声明
 
 本项目与 DeepSeek 官方无隶属关系。使用本引擎产生的 API 调用费用由使用者自行承担。请遵守所在地区相关法律法规。
+
+---
+
+## 12. 更新日志 | Changelog
+
+### v2.4 — 世界地图 · 斗技双轴 · 丹药赠送 · 角色卡斗技分配
+
+本版新增四个系统，并修复一个**影响所有高星斗圣**的既有缺陷。
+
+#### 🗺️ 世界地图（新）
+
+- **452 处地点**，按地理方位组织成 12 层嵌套树：斗气大陆 → 中州 / 西北大陆 / 独立空间 / 兽域 / 北域蛮族 / 南域魔兽家族
+- 手机宽度（560px）内的**内联展开树**，不做下钻导航 —— 点名字原地展开，贴合 W3C APG Tree View 模式
+- 未踏访 / 已踏访**统一一个字色**，状态只用边框与左侧色条表达
+- 「独立空间」一层收拢了远古八族各自的"界"（古界 / 魂界 / 炎界 / 雷界 / 萧界 / 灵界 / 石族空间 / 药族空间）与龙族四岛 —— 八族终于并列在同一层
+
+#### ⚔️ 斗技释放双轴锚点（新）
+
+设计原则：**由数据决定，不让 AI 自由发挥**，且只定**层级**、不写成品描写。
+
+- **主轴（境界）定量级** —— 斗圣随手一挥就是斗圣的分量
+- **副轴（阶别）定位置** —— 太浅 / 裕如 / 相当 / 生涩 / 底牌，判定这门斗技对现在的你处在什么位置
+- 关键语义：**"太浅"不等于"变弱"**，而是"运转毫无滞涩，威力被自身斗气抬到它本不该有的高度"
+- 越阶代价取自原著「焰分噬浪尺」：**顶多再用一次，强行二次便是重伤与损伤潜力**
+- **13 项阶别门槛表 + 4 个阈值**，不建 169 格矩阵；**182 格全组合矩阵**实测无死角、随境界单调递增
+- 三段（境界 / 契合度 / 熟练度）**合成一段注入**，与行动文本同段、置于最末
+- **零额外 API 调用**，玩家看不到（不可见分隔符包裹 + 上屏前剥离）
+
+#### 🎁 丹药赠送（新）
+
+- 点丹药弹出「服用 / 赠送」二选一；赠送从**人物角色卡**已收录的角色中选一人
+- 赠送对象同时出现在**左下角标签**（玩家看得见）与发给 AI 的文本（`将X赠送给Y`）—— 不把关键真相只押在提示词里
+- 三条入口（快捷纳戒 / 展开纳戒 / 斗技面板）**统一走同一条路径**
+
+#### 🧬 角色卡斗技分配（新）
+
+首次登场的人物写进角色卡时，**完全复用玩家开局那套分配机制**：
+
+| 维度 | 依据 |
+|:---|:---|
+| 斗技来源 | 227 条原著斗技（`COMBAT_SKILLS`） |
+| **族群匹配** | `SKILL_OWNER_MAP` + `isSkillOwnerMatch` —— 与开局管线同一对函数、同一张表 |
+| 阶别白名单 | `getTierLimits` |
+| 数量配额 | 斗帝 0 / **斗圣·半圣 7** / 斗尊 5 / 其余 3 |
+
+原著库已直填斗技的角色一律不覆盖。
+
+#### 🐛 修复
+
+- **高星斗圣拿不到天阶高级斗技**：星级解析写成 `map[starMatch[0]]`，而正则匹配到的是 `"五星"`、map 的键是 `"五"` → 恒为 `undefined` → `starNum` 永远是 0 → **所有斗圣都走"五星以下"分支**。推演版与降临版两处同步修复。
+- **异火掉出斗技栏**：识别从"精确字面量"改为多信号 OR（`[异火]` 标记 / 命中异火榜 / 括号内含"异火" / 以异火开头带分隔符），23 种异火 × 多种写法零漏判。
+- **面板描述缺失**：`skillDescOf` 只查斗技白名单，而异火在另一张独立表 —— 补为**三级来源**（斗技白名单 → 异火榜 → AI 自创侧表），227 条斗技 + 23 种异火 + 16 条秘法全覆盖。
 
 ---
 
