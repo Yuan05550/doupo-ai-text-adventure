@@ -29,7 +29,7 @@
 
 与传统"聊天式"角色扮演不同，本引擎的核心命题是：**如何在不可靠的 LLM 输出之上，构建一个状态永不错乱、进度永不丢失的游戏系统。**
 
-为此，项目用 **18,015 行原生 JavaScript** 手工实现了三层工程防护：LLM 输出的**字符串感知 JSON 容错链**、游戏状态的**护栏式合并（guarded merge）**、以及异步任务的**代际校验（generation guard）**。整个系统零框架、零构建步骤、零运行时依赖，可完全离线运行（仅推演需联网调用模型）。
+为此，项目用 **23,104 行原生 JavaScript** 手工实现了三层工程防护：LLM 输出的**字符串感知 JSON 容错链**、游戏状态的**护栏式合并（guarded merge）**、以及异步任务的**代际校验（generation guard）**。整个系统零框架、零构建步骤、零运行时依赖，可完全离线运行（仅推演需联网调用模型）。
 
 > **English abstract** — A single-file, dependency-free, LLM-driven interactive fiction engine based on the Chinese web novel *Battle Through the Heavens*. It solves three classes of reliability problems that plague LLM game masters: malformed structured output, state drift between turns, and race conditions between background tasks and save-file switching.
 
@@ -94,7 +94,7 @@
 
 一个**没有服务器、没有数据库、没有 npm 依赖**的 AI 文字冒险引擎——双击 `index.html` 即玩，存档存在浏览器本地。
 
-全部 **18,015 行**代码、**159 个函数**、四张内联数据表，压缩在同一个 HTML 文件里：没有 Webpack，没有 `npm install`，没有 `node_modules`。
+全部 **23,104 行**代码、**282 个函数**、四张内联数据表，压缩在同一个 HTML 文件里：没有 Webpack，没有 `npm install`，没有 `node_modules`。
 
 ### 1.2 关键指标
 
@@ -104,7 +104,7 @@
 | | 文件体积 | **3.26 MB**（3,415,104 字节） |
 | | 外部依赖 | **0** |
 | | 构建步骤 | **无** |
-| **代码规模** | 总行数 | 18,015 行 |
+| **代码规模** | 总行数 | 23,104 行 |
 | | 总字符数 | 1,950,000 |
 | | 函数定义 | 159 个（其中 async 26 个） |
 | | 异常保护块 | 45 处 try/catch |
